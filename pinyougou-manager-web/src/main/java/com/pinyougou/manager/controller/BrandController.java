@@ -1,6 +1,6 @@
 package com.pinyougou.manager.controller;
 
-import java.util.List;
+import java.util.List;import java.util.Map;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -87,5 +87,15 @@ public class BrandController {
 		public PageResult selectByExample(@RequestBody TbBrand tbBrand,int page, int size) {
 			return brandService.searchByExample(tbBrand, page, size);
 		}
+		/**
+		 * 查询品牌明细
+		 * @return
+		 */
+		@RequestMapping("/brandList")
+		public List<Map> brandList(){
+			return brandService.brandList();
+		}
+		
+		
 		
 }

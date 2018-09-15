@@ -19,150 +19,21 @@
 	<script src="../plugins/angularjs/pagination.js"></script>
 	<link rel="stylesheet" href="../plugins/angularjs/pagination.css">
     <!-- 分页组件结束 -->
-	
+    
+    <!-- 引入模块儿 -->
+	<script src="../js/basePagination.js"></script>
+	<!-- 引入服务层 -->
+	<script src="../js/service/brandService.js"></script>
+	<!-- 引入控制层 -->
+	<script src="../js/controller/baseController.js"></script>
+	<script src="../js/controller/brandController.js"></script>
 	<script>
-		<!--定义模块儿 -->
-		var app = angular.module("brandM",['pagination'])
-		
-		<!--定义服务-->
-		app.service("brandService",function($http){
-			//查询所有
-			this.findAll=function(){
-				return $http.get('../brand/findAll.do');
-			}
-			
-			this.findByPage=function(page,size){
-				return $http.get('../brand/findByPage.do?page='+page+'&size='+size);
-			}
-			
-			//根据ID查询
-			this.findById=function(id){
-				return $http.get('../brand/findById.do?id='+id);
-			}
-			//新增
-			this.add=function(entity){
-				return $http.post('../brand/add.do',entity)
-			}
-			
-			//更新
-			this.update=function(entity){
-				return $http.post('../brand/update.do',entity)
-			}
-			
-			
-			//删除选中的方法
-			this.deleteSelect=function(ids){
-				return $http.get('../brand/deleteSelect.do?ids='+ids);
-			}
-			
-			//条件查询
-			this.searchByExample=function(page,size,searchEntity){
-				return $http.post('../brand/selectByExample.do?page='+page+'&size='+size,searchEntity);
-			}
-		})
-		
-		<!--定义控制器-->
-		app.controller("brandController",function($scope,$http,brandService){
-			//查询所有
-			$scope.findAll=function(){
-				brandService.findAll().success(function(response){
-					$scope.list=response;
-				})
-			}
-			
-			//分页查询
-			//1.导入分页查询的js插件  为angularJs的模块 与 CSS 
-
-            //分页控件配置
-            $scope.paginationConf = {
-                currentPage: 1,
-                totalItems: 10,
-                itemsPerPage: 10,
-                perPageOptions: [10, 20, 30, 40, 50],
-                onChange: function () {
-                    $scope.reload();
-                }
-            };
-			//页面刷新
-			$scope.reload=function(){
-				//$scope.findByPage($scope.paginationConf.currentPage,$scope.paginationConf.itemsPerPage);
-				$scope.searchByExample($scope.paginationConf.currentPage,$scope.paginationConf.itemsPerPage);
-			}
-			
-			//分页查询
-			$scope.findByPage=function(page,size){
-				brandService.findByPage(page,size).success(
-					function(response){
-						$scope.list=response.pageMessage;
-						$scope.paginationConf.totalItems=response.totalPage;
-					})
-			}
-			
-			//新增品牌  & 更新品牌
-			$scope.save=function(){
-				var object = null;
-				if($scope.entity.id!=null){
-					object=brandService.update($scope.entity);
-				}else{
-					object=brandService.sdd($scope.entity);
-				}
-				object.success(function(response){
-					if(response.success){
-						$scope.reload();
-					}else{
-						alert(response.message);
-					}
-				})
-			}
-			
-			//根据ID查询
-			$scope.findById=function(id){
-				brandService.findById(id).success(function(response){
-					$scope.entity=response;
-				})
-			}
-			
-			//删除选中的品牌id  定义一个空数组 存放被选中的ID 
-			$scope.selectIds=[];
-			$scope.selectId=function($event,id){
-				if($event.target.checked){//选中的添加到数组中
-					$scope.selectIds.push(id);
-				}else{//未选中的删除
-					var index = $scope.selectIds.indexOf(id);//查找未选中的位置
-					$scope.selectIds.splice(index,1);//从数组中删除
-				}
-			}
-			//删除选中的方法
-			$scope.deleteSelect=function(){
-				brandService.deleteSelect($scope.selectIds).success(function(response){
-					if(confirm('确定删除嘛?')){
-						if(response.success){
-							$scope.reload();
-						}else{
-							alert(response.message);
-						}
-					}
-				})
-			}
-			//先初始化参数
-			$scope.searchEntity={};
-			//条件查询
-			$scope.searchByExample=function(page,size){
-				brandService.searchByExample(page,size,$scope.searchEntity).success(function(response){
-					$scope.list=response.pageMessage;
-					$scope.paginationConf.totalItems=response.totalPage;
-				})
-			}
-			
-			
-			
-		})
 	</script>
 
 
     
 </head>
-<body class="hold-transition skin-red sidebar-mini" ng-app="brandM" ng-controller="brandController" ">
+<body class="hold-transition skin-red sidebar-mini" ng-app="baseMPagination" ng-controller="brandController" ">
   <!-- .box-body -->
                     <div class="box-header with-border">
                         <h3 class="box-title">品牌管理</h3>
@@ -186,7 +57,7 @@
                             <div class="box-tools pull-right">
                                 <div class="has-feedback">
 							              品牌名称 <input ng-model="searchEntity.name" /> 品牌首字母<input ng-model="searchEntity.firstChar"/>
-							            <button class="btn btn-default" ng-click="reload()"> 查询      </button>                    
+							            <button class="btn btn-default" ng-click="reloadList()"> 查询      </button>                    
                                 </div>
                             </div>
                             <!--工具栏/-->

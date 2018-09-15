@@ -1,7 +1,9 @@
 package com.pinyougou.sellergoods.service.impl;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.Page;
@@ -99,5 +101,11 @@ public class BrandServiceImpl implements BrandService {
 		Page  selectByExample = (Page) tbBrandMpper.selectByExample(example);
 		return new PageResult(selectByExample.getTotal(),selectByExample.getResult());
 	}
-
+	/**
+	 * 查询品牌的List《Map》 响应给前台
+	 */
+	@RequestMapping("/brandList")
+	public List<Map> brandList(){
+		return tbBrandMpper.brandList();
+	};
 }
